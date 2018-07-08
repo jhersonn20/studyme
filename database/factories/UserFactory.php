@@ -14,10 +14,18 @@ use Faker\Generator as Faker;
 */
 
 $factory->define(App\User::class, function (Faker $faker) {
+    $client = array('ARCC','SABIC','JGC','DAEWOO','SAMSUNG','TASNEE','KJO');
+    $dept   = array('IT','CONTRACTS','DCS','ADMIN','QC','SAFETY');
+    $get_client = $client[array_rand($client)];
+    $get_dept   = $get_client === "ARCC" ? $dept[array_rand($dept)]:"";
+
     return [
+        'client' => $get_client,
+        'dept' => $get_dept,
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
         'password' => '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // secret
+        'expiry' => Carbon\Carbon::now(),
         'remember_token' => str_random(10),
     ];
 });

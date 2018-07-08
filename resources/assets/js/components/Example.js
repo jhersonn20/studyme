@@ -23,8 +23,7 @@ export default class Example extends Component {
             </Header>
 
             <Content style={{ padding: '0 50px', margin: '16px 0' }}>
-
-              <Layout style={{ padding: '24px 0', background: '#fff' }}>
+              <Layout style={{ padding: '24px 0', background: '#d6d3d3' }}>
                 <Sider width={200} style={{ background: '#fff' }}>
                   <Menu
                     mode="inline"
@@ -54,11 +53,11 @@ export default class Example extends Component {
                 </Content>
               </Layout>
             </Content>
-            
+
             <Footer style={{ textAlign: 'center' }}>
               Ant Design ©2016 Created by Ant UED
             </Footer>
-</Layout>
+          </Layout>
 
         );
     }

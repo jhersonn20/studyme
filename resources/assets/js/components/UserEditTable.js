@@ -275,6 +275,7 @@ class UserEditTable extends React.Component {
 
   delete = (record) => {
     console.log(record);
+    this.fetch();
   }
 
   cancel = () => {

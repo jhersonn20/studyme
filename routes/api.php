@@ -17,5 +17,7 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
-Route::post('register', 'UsersController@store');
+
 Route::get('user', 'UsersController@index');
+Route::post('register', 'UsersController@store');
+Route::post('/user/{id}', 'UsersController@update');

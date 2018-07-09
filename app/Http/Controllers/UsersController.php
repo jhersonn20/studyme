@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use App\Mail\emailVerification;
 use App\User;
 use Carbon\Carbon;
@@ -20,7 +21,9 @@ class UsersController extends Controller
 
 
 
-        $user = User::orderBy('dept')->paginate(10)->toJson();
+        $user = User::orderBy('name', 'asc')
+                  ->paginate(10)
+                  ->toJson();
 
         //$user = User::all()->toJson();
 
@@ -54,7 +57,7 @@ class UsersController extends Controller
 
         $request->validate([
           'client' => 'required|string|max:255',
-          'dept' => 'required|string|max:255',
+          'dept' => 'nullable|string|max:255',
           'name' => 'required|string|max:255',
           'email' => 'required|string|email|max:255|unique:users',
           'expiry' => 'required|',
@@ -113,7 +116,26 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+      $user = User::find(request('id'));
+
+      $this->validate($request, [
+        'dept' => 'nullable|string|max:255',
+        'name' => 'required|string|max:255',
+        'email' => 'required|unique:users,email,'.$user->id.'|email',
+      ]);
+
+      $user->update([
+        'dept'  => request('dept'),
+        'name'  => request('name'),
+        'email' => request('email'),
+        'expiry' => Carbon::parse(request('expiry')),
+      ]);
+
+      return response()->json([
+        'message' => 'Users Succesfully Updated!',
+      ],201);
+
     }
 
     /**

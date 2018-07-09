@@ -102,7 +102,7 @@ class UserTable extends React.Component {
 
   handleSearch = (e) => {
     this.setState({searchInput: e.target.value,})
-    
+
   }
 
   componentDidMount() {
@@ -114,7 +114,7 @@ class UserTable extends React.Component {
       <div>
         <div style={{ marginBottom: 16, textAlign: 'right' }}>
             <Search
-              placeholder = "Input search text"
+              placeholder = "Input search text"Search
               onSearch = {value => console.log(value)}
               style={{ width: 200 }}
               onPressEnter = {this.handleSearch}

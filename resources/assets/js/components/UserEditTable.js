@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import reqwest from 'reqwest';
 import moment from 'moment';
+import axios from 'axios';
 
-import { Table, Input, InputNumber, Popconfirm, Form, DatePicker } from 'antd';
+import { Table, Input, InputNumber, Popconfirm, Form, DatePicker, message, Button } from 'antd';
 
 
 const FormItem = Form.Item;
 const EditableContext = React.createContext();
 const dateFormat = "YYYY-MM-DD";
+const Search = Input.Search;
 
 const EditableRow = ({ form, index, ...props }) => (
   <EditableContext.Provider value={form}>
@@ -82,15 +84,22 @@ class UserEditTable extends React.Component {
       {
         title: 'Client',
         dataIndex: 'client',
-        width: '20%',
+        width: '15%',
         editable: false,
         sorter: true,
       },
       {
         title: 'Department',
         dataIndex: 'dept',
+        width: '15%',
+        editable: true,
+        sorter: true,
+      },
+      {
+        title: 'Name',
+        dataIndex: 'name',
         width: '20%',
-        editable: this.handleClient(client),
+        editable: true,
         sorter: true,
       },
       {
@@ -103,13 +112,14 @@ class UserEditTable extends React.Component {
       {
         title: 'Expiry',
         dataIndex: 'expiry',
-        width: '20%',
+        width: '10%',
         editable: true,
         sorter: true,
       },
       {
         title: 'operation',
         dataIndex: 'operation',
+        width: '10%',
         render: (text, record) => {
           const editable = this.isEditing(record);
           return (
@@ -118,24 +128,22 @@ class UserEditTable extends React.Component {
                 <span>
                   <EditableContext.Consumer>
                     {form => (
-                      <a
-                        href="javascript:;"
-                        onClick={() => this.save(form, record.id)}
-                        style={{ marginRight: 8 }}
-                      >
-                        Save
-                      </a>
+
+                      <Button type="primary" size='small' style={{ marginRight: 8 }}  onClick={() => this.save(form, record.id)}>Save</Button>
                     )}
                   </EditableContext.Consumer>
                   <Popconfirm
                     title="Sure to cancel?"
                     onConfirm={() => this.cancel(record.id)}
                   >
-                    <a>Cancel</a>
+                    <Button type="danger" size='small'>Cancel</Button>
                   </Popconfirm>
                 </span>
               ) : (
-                <a onClick={() => this.edit(record.id)}>Edit</a>
+                  <div style={{ marginRight: 8 }}>
+                    <Button type="primary" style={{ marginRight: 8 }} size='small'  onClick={() => this.edit(record.id)}>Edit</Button>
+                    <Button type="danger" size='small' onClick={() => this.delete(record.id)}>Delete</Button>
+                  </div>
               )}
             </div>
           );
@@ -225,25 +233,60 @@ class UserEditTable extends React.Component {
       if (index > -1) {
         const item   = newData[index];
         row.expiry   = row.expiry.format(dateFormat);
-        console.log(expiry)
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
+
+        reqwest({
+          url: 'api/user/' + item.id,
+          method: 'post',
+          data: {
+            id: item.id,
+            ...row
+          },
+          type: 'json',
+        }).then((data) => {
+
+          message.success(data.message);
+
+
+          this.fetch();
+        }).catch(error => {
+          if (error.response.status == 422) {
+            message.error('Please Check Invalid Inputs!', 10);
+            Object.entries(errors).forEach(([key, value]) =>{
+              this.handleError(key,value);
+
+           });
+           this.setState({loading: false});
+
+         }else {
+            message.error('Unable to get Errors! Please consult System Administrator',10);
+            this.setState({loading: false});
+         }
+
         });
-        //console.dir(item);
-        //console.dir(row);
+
         this.setState({ data: newData, editingKey: '' });
       } else {
-        newData.push(data);
+
         this.setState({ data: newData, editingKey: '' });
       }
-      //this.fetch();
+
     });
   }
+
+  delete = (record) => {
+    console.log(record);
+  }
+
   cancel = () => {
     this.setState({ editingKey: '' });
     this.fetch();
   };
+
+  handleSearch = (e) => {
+    const pager = { ...this.state.pagination};
+
+  }
+
   render() {
     const components = {
       body: {
@@ -270,19 +313,33 @@ class UserEditTable extends React.Component {
 
 
     return (
-      <Table
-        onChange = {this.handleTableChange}
-        rowKey={record => record.id}
-        pagination={this.state.pagination}
-        loading={this.state.loading}
-        components={components}
-        bordered
-        dataSource={this.state.data}
-        columns={columns}
-        rowClassName="editable-row"
-        size="small"
-        bordered
-      />
+      <div>
+        <div style={{ marginBottom: 16, textAlign: 'right' }}>
+            <Search
+              placeholder = "Input search text"
+              onSearch = {this.handleSearch}
+              style={{ width: 200 }}
+              onPressEnter = {this.handleSearch}
+
+            />
+        </div>
+
+        <Table
+          onChange = {this.handleTableChange}
+          rowKey={record => record.id}
+          pagination={this.state.pagination}
+          loading={this.state.loading}
+          components={components}
+          bordered
+          dataSource={this.state.data}
+          columns={columns}
+          rowClassName="editable-row"
+          size="small"
+          bordered
+        />
+
+      </div>
+
     );
   }
 }

@@ -6,6 +6,8 @@ import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 
 import HeaderPageComponent from './Utils/HeaderPageComponent';
 import SidebarComponent from './Utils/SidebarComponent';
+import ClientSelectorComponent from './Utils/ClientSelectorComponent';
+
 //import UsersTable from '../components/UserTable';
 import UserEditTable from '../components/UserEditTable';
 import WrappedRegistrationForm from '../components/RegisterUser';
@@ -24,7 +26,7 @@ class DashboardComponent extends Component {
             <Layout style={{ padding: '24px 0', background: '#fff' }}>
               <SidebarComponent/>
               <Content style={{ padding: '0 24px', minHeight: 720 }}>
-                <UserEditTable />
+                <WrappedRegistrationForm />
               </Content>
             </Layout>
           </Content>

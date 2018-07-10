@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import moment from 'moment';
+import reqwest from 'reqwest';
+
+import ClientSelectorComponent from './Utils/ClientSelectorComponent';
 
 import { Form, Input, Tooltip, Icon, Cascader, Select, Row, Col, Checkbox, Button, AutoComplete, message, Spin, DatePicker } from 'antd';
-
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -25,13 +27,57 @@ class RegistrationForm extends React.Component {
       confirmDirty: false,
       autoCompleteResult: [],
       loading: false,
-
+      clientData: [],
+      deptData: [],
+      fetching: false,
     };
 
     this.handleError  = this.handleError.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleOn  = this.handleOn.bind(this);
     this.handleOff  = this.handleOff.bind(this);
+  }
+
+  fetchClient = (params = {}) => {
+    this.setState({ data: [], fetching: true });
+
+    reqwest({
+      url: 'api/client/fetch',
+      method: 'get',
+      data: {
+        ...params,
+      },
+      type: 'json',
+    }).then((body) => {
+
+      const clientData = body.map(client => ({
+        text: client.client_desc,
+        value: client.client_code,
+      }));
+      this.setState({ clientData, fetching: false });
+
+    });
+  }
+
+  fetchDept = (params = {}) => {
+    this.setState({ data: [], fetching: true });
+
+    reqwest({
+      url: 'api/department/fetch',
+      method: 'get',
+      data: {
+        ...params,
+      },
+      type: 'json',
+    }).then((body) => {
+
+      const deptData = body.map(dept => ({
+        text: dept.dept_desc,
+        value: dept.dept_code,
+      }));
+      this.setState({ deptData, fetching: false });
+
+    });
   }
 
   handleOn = () => {
@@ -57,8 +103,7 @@ class RegistrationForm extends React.Component {
         value: [val],
         errors: [new Error([value])]
       }
-    })
-
+  });
 
     //console.log(key, value);
     //console.log(errors);
@@ -102,8 +147,6 @@ class RegistrationForm extends React.Component {
         //console.log('Received values of form: ', values);
         //console.log(values.name);
 
-        console.log(values['expiry'].format('YYYY-MM-DD'));
-
         axios.post('api/register',{
           'client' : values.client,
           'dept' : values.dept,
@@ -120,22 +163,25 @@ class RegistrationForm extends React.Component {
           this.setState({loading: false});
         }).
         catch(error=> {
+          console.log(error);
+
           if (error.response.status == 422) {
             message.error('Please Check Invalid Inputs!', 10);
             Object.entries(errors).forEach(([key, value]) =>{
               this.handleError(key,value);
 
            });
+
            this.setState({loading: false});
 
          }else {
             message.error('Unable to get Errors! Please consult System Administrator',10);
             this.setState({loading: false});
          }
-      });
-      }
-
-
+       });
+     }else{
+       this.setState({loading: false});
+     }
 
     });
   }
@@ -145,9 +191,15 @@ class RegistrationForm extends React.Component {
     this.setState({ confirmDirty: this.state.confirmDirty || !!value });
   }
 
+  componentWillMount(){
+    this.fetchClient();
+    this.fetchDept();
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const { autoCompleteResult } = this.state;
+    const {clientData, deptData } = this.state;
 
     const formItemLayout = {
       labelCol: {
@@ -188,13 +240,15 @@ class RegistrationForm extends React.Component {
           >
             {getFieldDecorator('client', {
               rules: [{ required: true, message: 'Please input your Client!' }],
-              initialValue: 'jack',
+
             })(
-              <Select style={{ width: 190 }} placeholder="Select Client" >
-                  <Option value="jack">Jack</Option>
-                  <Option value="lucy">Lucy</Option>
-                  <Option value="Yiminghe">yiminghe</Option>
-                </Select>
+              <Select
+                placeholder="Select Client"
+                filterOption={false}
+                style={{ width: '190' }}
+              >
+                {clientData.map(d => <Option key={d.value}>{d.text}</Option>)}
+              </Select>
             )}
           </FormItem>
 
@@ -205,13 +259,15 @@ class RegistrationForm extends React.Component {
           >
             {getFieldDecorator('dept', {
               rules: [{ required: true, message: 'Please input your Department!' }],
-              initialValue: 'jack',
+
             })(
-              <Select  style={{ width: 190 }} placeholder="Select Client" >
-                  <Option value="jack">Jack</Option>
-                  <Option value="lucy">Lucy</Option>
-                  <Option value="Yiminghe">yiminghe</Option>
-                </Select>
+              <Select
+                placeholder="Select Client"
+                filterOption={false}
+                style={{ width: '190' }}
+              >
+                {deptData.map(d => <Option key={d.value}>{d.text}</Option>)}
+              </Select>
             )}
           </FormItem>
 

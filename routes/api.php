@@ -21,3 +21,7 @@ use Illuminate\Http\Request;
 Route::get('user', 'UsersController@index');
 Route::post('register', 'UsersController@store');
 Route::post('/user/{id}', 'UsersController@update');
+
+
+Route::get('client/fetch', 'ClientController@fetch');
+Route::get('department/fetch', 'DepartmentController@fetch');

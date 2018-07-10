@@ -249,9 +249,11 @@ class UserEditTable extends React.Component {
 
           this.fetch();
         }).catch(error => {
-          if (error.response.status == 422) {
+          if (error.status == 422) {
             message.error('Please Check Invalid Inputs!', 10);
-            Object.entries(errors).forEach(([key, value]) =>{
+
+            Object.entries(error.response).forEach(([key, value]) =>{
+              console.log(key,value);
               this.handleError(key,value);
 
            });
@@ -264,7 +266,6 @@ class UserEditTable extends React.Component {
 
         });
 
-        this.setState({ data: newData, editingKey: '' });
       } else {
 
         this.setState({ data: newData, editingKey: '' });
@@ -275,8 +276,27 @@ class UserEditTable extends React.Component {
 
   delete = (record) => {
     console.log(record);
+
+
+
+
     this.fetch();
   }
+
+  handleError = (key,value) => {
+    const {getFieldsValue} = this.props.form;
+    const val = getFieldsValue([key]);
+
+    this.props.form.setFields({
+      [key]:{
+        value: [val],
+        errors: [new Error([value])]
+      }
+    });
+
+  }
+
+
 
   cancel = () => {
     this.setState({ editingKey: '' });

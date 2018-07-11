@@ -30,6 +30,7 @@ class RegistrationForm extends React.Component {
       clientData: [],
       deptData: [],
       fetching: false,
+      disableSelect: true,
     };
 
     this.handleError  = this.handleError.bind(this);
@@ -103,41 +104,33 @@ class RegistrationForm extends React.Component {
         value: [val],
         errors: [new Error([value])]
       }
-  });
+    });
 
-    //console.log(key, value);
-    //console.log(errors);
-    // let data =  {};
-    //
-    // const error = JSON.stringify(`{ "${key}": { "errors": [new Error("${value}")]} }`);
-    //
-    // //console.log(error);
-    //
-    // console.log(JSON.parse(error));
-    //
-    // this.props.form.setFields(error);
-
-    // console.log(errors);
-    //
-    // Object.entries(errors).forEach(([key, value]) =>{
-    //  const error = `${key}: {errors: [new Error("${value}")]}`;
-    //  const stringify = JSON.stringify(error);
-    //
-    //  console.log(JSON.parse(stringify));
-    //  this.props.form.setFields(JSON.parse(stringify))
-
-
-    // });
-
-    // this.props.form.setFields({
-    //   "name": {
-    //     "errors": [new Error('tanginanmankasie')]
-    //   },
-    //   "password":{
-    //     "errors": [new Error('putanginamo')]
-    //   }
-    // })
   }
+
+  onChangeClient = (value) => {
+    console.log(value);
+    console.log(this.state.disableSelect);
+
+    if(value === "ARCC") {
+
+        this.setState({disableSelect: false});
+    }else{
+      const {getFieldsValue} = this.props.form;
+
+      this.props.form.setFields({
+        "dept":{
+          value: "",
+
+        }
+      });
+
+
+      this.setState({disableSelect: true});
+    }
+  }
+
+
 
   handleSubmit = (e) => {
     e.preventDefault();
@@ -163,10 +156,11 @@ class RegistrationForm extends React.Component {
           this.setState({loading: false});
         }).
         catch(error=> {
-          console.log(error);
-
           if (error.response.status == 422) {
+            const errors = error.response.data.errors;
+            //console.dir(error.response.data);
             message.error('Please Check Invalid Inputs!', 10);
+
             Object.entries(errors).forEach(([key, value]) =>{
               this.handleError(key,value);
 
@@ -195,6 +189,8 @@ class RegistrationForm extends React.Component {
     this.fetchClient();
     this.fetchDept();
   }
+
+
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -246,6 +242,8 @@ class RegistrationForm extends React.Component {
                 placeholder="Select Client"
                 filterOption={false}
                 style={{ width: '190' }}
+                onChange={this.onChangeClient}
+
               >
                 {clientData.map(d => <Option key={d.value}>{d.text}</Option>)}
               </Select>
@@ -258,13 +256,14 @@ class RegistrationForm extends React.Component {
 
           >
             {getFieldDecorator('dept', {
-              rules: [{ required: true, message: 'Please input your Department!' }],
+
 
             })(
               <Select
                 placeholder="Select Client"
                 filterOption={false}
                 style={{ width: '190' }}
+                disabled={this.state.disableSelect}
               >
                 {deptData.map(d => <Option key={d.value}>{d.text}</Option>)}
               </Select>

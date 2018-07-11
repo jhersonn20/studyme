@@ -65,10 +65,6 @@ class UsersController extends Controller
 
         ]);
 
-        //$hash_pass = Hash::make(request('password'));
-        //dd(Carbon::parse(request('expiry'))->toDateString());
-
-
         $user = User::create(['client' => request('client'),
          'dept'  => request('dept'),
          'name'  => request('name'),

@@ -17,10 +17,6 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
-if(env('APP_ENV') === 'production') {
-  URL::forceSchema('https');
-}
-
 Route::get('user', 'UsersController@index');
 Route::post('register', 'UsersController@store');
 Route::post('/user/{id}', 'UsersController@update');

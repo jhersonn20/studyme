@@ -99,9 +99,12 @@ class RegistrationForm extends React.Component {
     const {getFieldsValue} = this.props.form;
     const val = getFieldsValue([key]);
 
+    console.log(val[key]);
+
+
     this.props.form.setFields({
       [key]:{
-        value: [val],
+        value: val[key],
         errors: [new Error([value])]
       }
     });
@@ -109,8 +112,6 @@ class RegistrationForm extends React.Component {
   }
 
   onChangeClient = (value) => {
-    console.log(value);
-    console.log(this.state.disableSelect);
 
     if(value === "ARCC") {
 
@@ -158,7 +159,6 @@ class RegistrationForm extends React.Component {
         catch(error=> {
           if (error.response.status == 422) {
             const errors = error.response.data.errors;
-            //console.dir(error.response.data);
             message.error('Please Check Invalid Inputs!', 10);
 
             Object.entries(errors).forEach(([key, value]) =>{

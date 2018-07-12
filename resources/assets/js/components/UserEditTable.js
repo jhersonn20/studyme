@@ -4,7 +4,7 @@ import reqwest from 'reqwest';
 import moment from 'moment';
 import axios from 'axios';
 
-import { Table, Input, InputNumber, Popconfirm, Form, DatePicker, message, Button } from 'antd';
+import { Table, Input, InputNumber, Popconfirm, Form, DatePicker, message, Button, Row, Col } from 'antd';
 
 
 const FormItem = Form.Item;
@@ -133,7 +133,7 @@ class UserEditTable extends React.Component {
                     )}
                   </EditableContext.Consumer>
                   <Popconfirm
-                    title="Sure to cancel?"
+                    title="Are you sure to cancel?"
                     onConfirm={() => this.cancel(record.id)}
                   >
                     <Button type="danger" size='small'>Cancel</Button>
@@ -142,7 +142,15 @@ class UserEditTable extends React.Component {
               ) : (
                   <div style={{ marginRight: 8 }}>
                     <Button type="primary" style={{ marginRight: 8 }} size='small'  onClick={() => this.edit(record.id)}>Edit</Button>
-                    <Button type="danger" size='small' onClick={() => this.delete(record.id)}>Delete</Button>
+
+                      <Popconfirm
+                        title="Are you sure to Delete this record?"
+                        onConfirm={() => this.delete(record.id)}
+                      >
+
+                      <Button type="danger" size='small'>Delete</Button>
+
+                      </Popconfirm>
                   </div>
               )}
             </div>
@@ -280,6 +288,8 @@ class UserEditTable extends React.Component {
 
 
 
+
+
     this.fetch();
   }
 
@@ -289,7 +299,7 @@ class UserEditTable extends React.Component {
 
     this.props.form.setFields({
       [key]:{
-        value: [val],
+        value: val[key],
         errors: [new Error([value])]
       }
     });
@@ -335,14 +345,24 @@ class UserEditTable extends React.Component {
 
     return (
       <div>
-        <div style={{ marginBottom: 16, textAlign: 'right' }}>
-            <Search
-              placeholder = "Input search text"
-              onSearch = {this.handleSearch}
-              style={{ width: 200 }}
-              onPressEnter = {this.handleSearch}
+        <div style={{ marginBottom: 16, }}>
+            <Row >
+              <Col span={8} style={{textAlign: 'left'}}>
+                  <Button type="primary" > Add new User </ Button>
+              </Col>
 
-            />
+              <Col span={8} offset={8} style={{ textAlign: 'right' }}>
+                <Search
+                  placeholder = "Input search text"
+                  onSearch = {this.handleSearch}
+                  style={{ width: 200 }}
+                  onPressEnter = {this.handleSearch}
+
+                  />
+              </Col>
+            </Row>
+
+
         </div>
 
         <Table

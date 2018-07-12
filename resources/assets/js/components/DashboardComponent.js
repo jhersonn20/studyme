@@ -26,7 +26,7 @@ class DashboardComponent extends Component {
             <Layout style={{ padding: '24px 0', background: '#fff' }}>
               <SidebarComponent/>
               <Content style={{ padding: '0 24px', minHeight: 720 }}>
-                <WrappedRegistrationForm />
+                <UserEditTable />
               </Content>
             </Layout>
           </Content>

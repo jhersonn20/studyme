@@ -1,11 +1,15 @@
 <?php
 
-$url = parse_url(getenv("DATABASE_URL"));
+if(env('APP_ENV') === 'production') {
+  $url = parse_url(getenv("DATABASE_URL"));
 
-$host = $url["host"];
-$username = $url["user"];
-$password = $url["pass"];
-$database = substr($url["path"], 1);
+  $host = $url["host"];
+  $username = $url["user"];
+  $password = $url["pass"];
+  $database = substr($url["path"], 1);
+
+}
+
 
 return [
 
@@ -48,7 +52,7 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', '127.0.0.1'),
+            'host' => env('DB_HOST', 'localhost'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'forge'),
             'username' => env('DB_USERNAME', 'forge'),
@@ -63,11 +67,11 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'host' => env('DB_HOST', $host),
+            'host' => env('DB_HOST', env('APP_ENV') === 'production' ? $host: 'localhost'),
             'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', $database),
-            'username' => env('DB_USERNAME', $username),
-            'password' => env('DB_PASSWORD', $password),
+            'database' => env('DB_DATABASE', env('APP_ENV') === 'production' ? $database: 'forge'),
+            'username' => env('DB_USERNAME', env('APP_ENV') === 'production' ? $username: 'forge'),
+            'password' => env('DB_PASSWORD', env('APP_ENV') === 'production' ? $password: ''),
             'charset' => 'utf8',
             'prefix' => '',
             'schema' => 'public',

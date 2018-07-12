@@ -8,7 +8,7 @@
 
     <title>{{ config('app.name', 'Studyme') }}</title>
 
-    <link rel="stylesheet" href="{{ secure_asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <!-- Scripts -->
     <script>
         window.Laravel = <?php echo json_encode([
@@ -24,6 +24,6 @@
 </div>
 
 
-<script src="{{ secure_asset("js/app.js") }}"></script>
+<script src="{{ asset("js/app.js") }}"></script>
 </body>
 </html>
